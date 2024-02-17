@@ -1,0 +1,60 @@
+version: "3.9"
+
+services:
+
+  postgres:
+    image: postgres:16
+    environment:
+      POSTGRES_DB: 'app'
+      POSTGRES_USER: 'user'
+      POSTGRES_PASSWORD: 'password'
+    ports:
+      - '0.0.0.0:5438:5432'
+  
+  pgadmin:
+    image: dpage/pgadmin4
+    ports:
+      - '0.0.0.0:7878:80'
+    environment:
+      PGADMIN_DEFAULT_EMAIL: 'app@example.com'
+      PGADMIN_DEFAULT_PASSWORD: 'password'
+
+  amqp:
+    image: rabbitmq:3-management-alpine
+    ports:
+      - '0.0.0.0:5673:5672'
+      - '0.0.0.0:15673:15672'
+
+  clickhouse:
+    image: clickhouse/clickhouse-server:23.4.2.11-alpine
+    restart: on-failure
+    ports:
+      - '0.0.0.0:8126:8123'
+      - '0.0.0.0:9006:9000'
+    environment:
+      CLICKHOUSE_DB: 'app'
+      CLICKHOUSE_USER: 'user'
+      CLICKHOUSE_PASSWORD: 'password'
+      CLICKHOUSE_DEFAULT_ACCESS_MANAGEMENT: 1
+    #volumes:
+    #  - ./volumes/clickhouse-data:/var/lib/clickhouse
+    #ulimits:
+    #  nofile:
+    #    soft: 262144
+    #    hard: 262144
+    #stop_grace_period: 30s
+
+  minio:
+    image: docker.io/bitnami/minio:2023
+    restart: always
+    #volumes:
+    #  - ./volumes/minio-data:/bitnami/minio/data:rw
+    ports:
+      - "49002:9000"
+      - "9002:9001"
+    environment:
+      MINIO_ROOT_USER: 'user'
+      MINIO_ROOT_PASSWORD: 'password'
+      MINIO_SCHEME: 'http'
+      MINIO_FORCE_NEW_KEYS: 'yes'
+      MINIO_DEFAULT_BUCKETS: 'default'
