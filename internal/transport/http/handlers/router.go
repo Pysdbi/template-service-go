@@ -3,18 +3,18 @@ package handlers
 import (
 	"github.com/fasthttp/router"
 	"github.com/valyala/fasthttp"
-	"template-service-go/internal/app/instance"
+	"template-service-go/internal/app"
 )
 
 type Handlers struct {
-	instance *instance.Instance
+	app *app.App
 
 	api *router.Group
 }
 
-func InitHandlers(r *router.Router, inst *instance.Instance) {
+func InitHandlers(app *app.App, r *router.Router) {
 	h := &Handlers{
-		instance: inst,
+		app: app,
 	}
 
 	h.initApi(r)
@@ -25,6 +25,7 @@ func (h *Handlers) initApi(r *router.Router) {
 	h.api = r.Group("/api")
 
 	h.initApiApp()
+	h.initApiUser()
 
 	// Default handler if handler not found
 	r.NotFound = func(ctx *fasthttp.RequestCtx) {
@@ -34,5 +35,5 @@ func (h *Handlers) initApi(r *router.Router) {
 }
 
 func (h *Handlers) handle(handler HandlerFunc) fasthttp.RequestHandler {
-	return wrapHandler(handler, h.instance.Config)
+	return wrapHandler(handler, h.app.Config)
 }

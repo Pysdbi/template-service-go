@@ -7,8 +7,8 @@ import (
 )
 
 type InfoBlock struct {
-	title  string
-	params map[string]interface{}
+	Title  string
+	Params map[string]interface{}
 }
 
 func (a *App) PrintAppInfo(blocks []InfoBlock) {
@@ -23,8 +23,8 @@ func (a *App) PrintAppInfo(blocks []InfoBlock) {
 
 	blocks = append([]InfoBlock{
 		{
-			title: "App",
-			params: map[string]interface{}{
+			Title: "App",
+			Params: map[string]interface{}{
 				"name":    name(a.Config.Name),
 				"version": version(a.Config.Version),
 				"debug":   debug(debugStatus),
@@ -38,16 +38,16 @@ func (a *App) PrintAppInfo(blocks []InfoBlock) {
 	builder.WriteString(border)
 
 	for _, block := range blocks {
-		builder.WriteString(fmt.Sprintf("| %s:\n", block.title))
+		builder.WriteString(fmt.Sprintf("| %s:\n", block.Title))
 
 		maxKeyLength := 0
-		for key := range block.params {
+		for key := range block.Params {
 			if len(key) > maxKeyLength {
 				maxKeyLength = len(key)
 			}
 		}
 
-		for key, value := range block.params {
+		for key, value := range block.Params {
 			spaces := strings.Repeat(" ", maxKeyLength-len(key))
 			builder.WriteString(fmt.Sprintf("| - %s:%s %v\n", key, spaces, value))
 		}

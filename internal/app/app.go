@@ -2,11 +2,11 @@ package app
 
 import (
 	"log"
-	"template-service-go/internal/app/instance"
 	"template-service-go/internal/config"
 	"template-service-go/internal/domain/clickhouse"
 	"template-service-go/internal/domain/minio"
 	"template-service-go/internal/domain/pgsql"
+	iservice "template-service-go/internal/service/interface"
 	"template-service-go/internal/transport/amqp"
 )
 
@@ -20,6 +20,8 @@ type App struct {
 	Amqp  *amqp.Amqp   `json:"amqp"`
 	Minio *minio.Minio `json:"minio"`
 
+	Services iservice.Services
+
 	Close chan bool `json:"close"`
 }
 
@@ -30,16 +32,6 @@ func NewApp() *App {
 
 func (a *App) LogErr(errs ...interface{}) {
 	log.Fatal(errs)
-}
-
-func (a *App) GetInstance() *instance.Instance {
-	return &instance.Instance{
-		Config:     a.Config,
-		Database:   a.Database,
-		Clickhouse: a.Clickhouse,
-		Amqp:       a.Amqp,
-		Minio:      a.Minio,
-	}
 }
 
 // GracefulShutdown close all

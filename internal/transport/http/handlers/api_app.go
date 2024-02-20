@@ -1,13 +1,27 @@
 package handlers
 
 import (
-	"fmt"
 	"template-service-go/internal/pkg/http/response"
 )
 
 func (h *Handlers) initApiApp() {
+	appService := h.app.Services.GetAppService()
+
 	h.api.GET("/healthcheck", h.handle(func(resp *response.Response) {
-		appInfo := fmt.Sprintf("%s v%s", h.instance.Config.Name, h.instance.Config.Version)
-		resp.SetValue(appInfo)
+		ok, err := appService.Healthcheck()
+		if err != nil {
+			resp.SetError(5, err.Error())
+		}
+
+		resp.SetValue(ok)
+	}))
+
+	h.api.GET("/app-info", h.handle(func(resp *response.Response) {
+		info, err := appService.GetAppInfo()
+		if err != nil {
+			resp.SetError(5, err.Error())
+		}
+
+		resp.SetValue(info)
 	}))
 }

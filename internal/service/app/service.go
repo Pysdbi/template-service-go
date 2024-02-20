@@ -1,29 +1,34 @@
-package service
+package app
 
 import (
 	"fmt"
-	"template-service-go/internal/app/instance"
-	def "template-service-go/internal/service"
+
+	iservice "template-service-go/internal/service/interface"
+
+	"template-service-go/internal/app"
 )
 
-var _ def.AppService = (*service)(nil)
-
-type service struct {
-	inst *instance.Instance
-}
-
-func NewService(inst *instance.Instance) *service {
-	return &service{
-		inst: inst,
+func NewService(app *app.App) *Service {
+	return &Service{
+		app: app,
 	}
 }
 
-func (s *service) HealthCheck() (string, error) {
-	fmt.Println(s.inst.Config.Name, s.inst.Config.Version)
-	return "ok", nil
+type Service struct {
+	app *app.App
 }
 
-func (s *service) GetAppInfo() (string, error) {
-	info := fmt.Sprintf("%s v%s", s.inst.Config.Name, s.inst.Config.Version)
+var _ iservice.AppService = (*Service)(nil)
+
+func (s *Service) Healthcheck() (bool, error) {
+	return true, nil
+}
+
+func (s *Service) GetAppInfo() (string, error) {
+	info := fmt.Sprintf(
+		"%s v%s",
+		s.app.Config.Name,
+		s.app.Config.Version,
+	)
 	return info, nil
 }

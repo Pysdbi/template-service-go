@@ -2,11 +2,11 @@ package http
 
 import (
 	"fmt"
+	"template-service-go/internal/app"
 
 	"github.com/fasthttp/router"
 	"github.com/valyala/fasthttp"
 
-	"template-service-go/internal/app/instance"
 	"template-service-go/internal/transport/http/handlers"
 )
 
@@ -14,16 +14,16 @@ type HttpServer struct {
 	Address string
 	Router  *router.Router
 
-	instance *instance.Instance
+	app *app.App
 }
 
-func InitHttpServer(instance *instance.Instance) *HttpServer {
+func InitHttpServer(app *app.App) *HttpServer {
 	var hs HttpServer
 
-	hs.Address = fmt.Sprintf("%s:%s", instance.Config.HTTP.Host, instance.Config.HTTP.Port)
+	hs.Address = fmt.Sprintf("%s:%s", app.Config.HTTP.Host, app.Config.HTTP.Port)
 	hs.Router = router.New()
 
-	handlers.InitHandlers(hs.Router, instance)
+	handlers.InitHandlers(app, hs.Router)
 	return &hs
 }
 

@@ -1,19 +1,23 @@
-package app
+package application_name
 
 import (
 	"github.com/fatih/color"
+	"template-service-go/internal/transport/http"
+
+	application "template-service-go/internal/app"
+
 	"template-service-go/internal/config"
 	"template-service-go/internal/domain/clickhouse"
 	"template-service-go/internal/domain/minio"
 	"template-service-go/internal/domain/pgsql"
+	"template-service-go/internal/service"
 	"template-service-go/internal/transport/amqp"
-	"template-service-go/internal/transport/http"
 )
 
 func Run() {
 
 	// create app =================
-	app := NewApp()
+	app := application.NewApp()
 
 	// init Config ================
 	conf, err := config.NewConfig()
@@ -54,10 +58,10 @@ func Run() {
 	app.Amqp = am
 
 	// init Services ============
-	// TODO: appServices := service.InitServices(app.GetInstance())
+	app.Services = service.InitServices(app)
 
 	// init http server ============
-	httpServer := http.InitHttpServer(app.GetInstance())
+	httpServer := http.InitHttpServer(app)
 	go func() {
 		err := httpServer.Serve()
 		if err != nil {
@@ -66,10 +70,10 @@ func Run() {
 	}()
 
 	// Show info about service
-	app.PrintAppInfo([]InfoBlock{
+	app.PrintAppInfo([]application.InfoBlock{
 		{
-			title: "HTTP server",
-			params: map[string]interface{}{
+			Title: "HTTP server",
+			Params: map[string]interface{}{
 				"address": color.New(color.Underline).Sprintf("%s:%s", app.Config.HTTP.Host, app.Config.HTTP.Port),
 				"status":  color.New(color.FgGreen).Sprint("ok"),
 			},
